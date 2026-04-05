@@ -29,7 +29,8 @@ export function TimelineCard({ expense, profile }: TimelineCardProps) {
     setStatus("pago");
 
     const supabase = createClient();
-    const { error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase as any)
       .from("expenses")
       .update({ status: "pago", pago_em: new Date().toISOString() })
       .eq("id", expense.id);

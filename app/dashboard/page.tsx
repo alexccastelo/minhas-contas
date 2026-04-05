@@ -1,5 +1,4 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createServerClient } from "@/lib/supabase";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { SectionTitle } from "@/components/dashboard/SectionTitle";
 import { TimelineCard } from "@/components/dashboard/TimelineCard";
@@ -13,30 +12,8 @@ function formatDateBR(date: Date) {
   }).format(date);
 }
 
-async function createServerSupabase() {
-  const cookieStore = await cookies();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return createServerClient<any>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            cookieStore.set(name, value, options as any);
-          });
-        },
-      },
-    }
-  );
-}
-
 export default async function DashboardPage() {
-  const supabase = await createServerSupabase();
+  const supabase = createServerClient();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const todayStr = today.toISOString().split("T")[0];
