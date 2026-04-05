@@ -1,4 +1,6 @@
 import { createServerClient } from "@/lib/supabase";
+
+export const dynamic = "force-dynamic";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { SectionTitle } from "@/components/dashboard/SectionTitle";
 import { TimelineCard } from "@/components/dashboard/TimelineCard";
