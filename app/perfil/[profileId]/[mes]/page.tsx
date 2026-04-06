@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase";
 import { MonthlyHeader } from "@/components/monthly/MonthlyHeader";
+import { GenerateNextMonthButton } from "@/components/monthly/GenerateNextMonthButton";
 import { SectionTitle } from "@/components/dashboard/SectionTitle";
 import { TimelineCard } from "@/components/dashboard/TimelineCard";
 import type { Expense, Profile, ExpenseStatus, IncomeEntry } from "@/lib/types";
@@ -15,6 +16,12 @@ function formatDateBR(date: Date) {
   return new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "numeric", month: "short" }).format(date);
 }
 
+function calcNextMes(mes: string): string {
+  const [year, month] = mes.split("-").map(Number);
+  const d = new Date(year, month, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
 interface PageProps {
   params: Promise<{ profileId: string; mes: string }>;
 }
@@ -27,6 +34,8 @@ export default async function PerfilMesPage({ params }: PageProps) {
 
   const supabase = createServerClient();
   const competencia = `${mes}-01`;
+  const nextMes = calcNextMes(mes);
+  const nextCompetencia = `${nextMes}-01`;
 
   // Busca perfil
   const { data: profileData } = await supabase
@@ -38,15 +47,24 @@ export default async function PerfilMesPage({ params }: PageProps) {
   if (!profileData) notFound();
   const profile: Profile = profileData;
 
-  // Busca período
-  const { data: periodData } = await supabase
-    .from("monthly_periods")
-    .select("id")
-    .eq("profile_id", profileId)
-    .eq("competencia", competencia)
-    .maybeSingle();
+  // Busca período atual e próximo em paralelo
+  const [{ data: periodData }, { data: nextPeriodData }] = await Promise.all([
+    supabase
+      .from("monthly_periods")
+      .select("id")
+      .eq("profile_id", profileId)
+      .eq("competencia", competencia)
+      .maybeSingle(),
+    supabase
+      .from("monthly_periods")
+      .select("id")
+      .eq("profile_id", profileId)
+      .eq("competencia", nextCompetencia)
+      .maybeSingle(),
+  ]);
 
   const periodId: string | null = periodData?.id ?? null;
+  const nextPeriodExists = !!nextPeriodData;
 
   // Busca expenses do período (se existir)
   let expenses: Expense[] = [];
@@ -73,13 +91,19 @@ export default async function PerfilMesPage({ params }: PageProps) {
   const normais = expenses.filter((e) => e.tipo !== "atrasada");
   const atrasadas = expenses.filter((e) => e.tipo === "atrasada");
 
+  // Para geração do próximo mês
+  const assinaturas = expenses.filter((e) => e.tipo === "assinatura" && e.status !== "pago");
+  const unpaidParaRolar = expenses.filter(
+    (e) => e.status === "a_pagar" && (e.tipo === "normal" || e.tipo === "atrasada")
+  );
+
   // Totais
   const totalAPagar = normais.filter((e) => e.status === "a_pagar").reduce((s, e) => s + (e.valor ?? 0), 0);
   const totalPago = normais.filter((e) => e.status === "pago").reduce((s, e) => s + (e.valor ?? 0), 0);
   const totalAtrasado = atrasadas.filter((e) => e.status === "a_pagar").reduce((s, e) => s + (e.valor ?? 0), 0);
   const totalEntradas = incomeEntries.reduce((s, i) => s + i.valor, 0);
 
-  // Resumo por dia (apenas não pagas)
+  // Resumo por dia (apenas normais)
   const porDia = normais.reduce<Record<string, Expense[]>>((acc, e) => {
     const key = e.vencimento;
     if (!acc[key]) acc[key] = [];
@@ -188,6 +212,20 @@ export default async function PerfilMesPage({ params }: PageProps) {
           <p className="mt-1 text-sm text-gray-600">Use o Dashboard para adicionar contas.</p>
         </div>
       )}
+
+      {/* Gerar próximo mês */}
+      <section className="mt-4 px-4 pb-4">
+        <p className="mb-2 text-xs font-medium uppercase tracking-widest text-gray-600">Próximo mês</p>
+        <GenerateNextMonthButton
+          profileId={profileId}
+          currentMes={mes}
+          nextMes={nextMes}
+          currentPeriodId={periodId}
+          nextPeriodExists={nextPeriodExists}
+          assinaturas={assinaturas}
+          unpaidExpenses={unpaidParaRolar}
+        />
+      </section>
     </main>
   );
 }
