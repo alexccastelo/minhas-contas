@@ -23,6 +23,54 @@ interface DashboardHeaderProps {
   today: Date;
 }
 
+const NAV_LINKS = [
+  {
+    href: "/kanban",
+    label: "Kanban",
+    icon: (
+      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+      </svg>
+    ),
+  },
+  {
+    href: "/fluxo",
+    label: "Fluxo",
+    icon: (
+      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    ),
+  },
+  {
+    href: "/assinaturas",
+    label: "Assinaturas",
+    icon: (
+      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+      </svg>
+    ),
+  },
+  {
+    href: "/emprestimos",
+    label: "Empréstimos",
+    icon: (
+      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+  },
+  {
+    href: "/contracheque",
+    label: "Contracheque",
+    icon: (
+      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    ),
+  },
+];
+
 export function DashboardHeader({
   totalAPagar,
   totalAtrasado,
@@ -32,57 +80,17 @@ export function DashboardHeader({
   const saldo = totalEntradas - totalAPagar - totalAtrasado;
 
   return (
-    <div className="bg-gray-900 px-4 pb-4 pt-6">
-      {/* Data + link assinaturas */}
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-widest text-gray-500">
-            {formatDate(today)}
-          </p>
-          <h1 className="mt-1 text-2xl font-bold text-gray-100">Minhas Contas</h1>
-        </div>
-        <div className="flex flex-col items-end gap-1 mt-1">
-          <Link
-            href="/assinaturas"
-            className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-gray-500 hover:bg-gray-800 hover:text-gray-300 transition-colors"
-          >
-            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-            </svg>
-            Assinaturas
-          </Link>
-          <Link
-            href="/emprestimos"
-            className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-gray-500 hover:bg-gray-800 hover:text-gray-300 transition-colors"
-          >
-            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Empréstimos
-          </Link>
-          <Link
-            href="/contracheque"
-            className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-gray-500 hover:bg-gray-800 hover:text-gray-300 transition-colors"
-          >
-            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Contracheque
-          </Link>
-          <Link
-            href="/fluxo"
-            className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-gray-500 hover:bg-gray-800 hover:text-gray-300 transition-colors"
-          >
-            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            Fluxo
-          </Link>
-        </div>
+    <div className="bg-gray-900 pt-6 pb-3">
+      {/* Título */}
+      <div className="px-4">
+        <p className="text-xs font-medium uppercase tracking-widest text-gray-500">
+          {formatDate(today)}
+        </p>
+        <h1 className="mt-1 text-2xl font-bold text-gray-100">Minhas Contas</h1>
       </div>
 
       {/* Cards de resumo */}
-      <div className="mt-4 grid grid-cols-3 gap-2">
+      <div className="mt-4 grid grid-cols-3 gap-2 px-4">
         <SummaryCard
           label="A Pagar"
           value={formatCurrency(totalAPagar)}
@@ -102,6 +110,20 @@ export function DashboardHeader({
           bgColor={saldo >= 0 ? "bg-emerald-500/10" : "bg-red-500/10"}
         />
       </div>
+
+      {/* Nav horizontal scrollável */}
+      <nav className="mt-3 flex gap-1 overflow-x-auto px-4 pb-1 scrollbar-none">
+        {NAV_LINKS.map((l) => (
+          <Link
+            key={l.href}
+            href={l.href}
+            className="flex flex-none items-center gap-1.5 rounded-lg px-3 py-2 text-xs text-gray-500 hover:bg-gray-800 hover:text-gray-300 transition-colors whitespace-nowrap"
+          >
+            {l.icon}
+            {l.label}
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }
