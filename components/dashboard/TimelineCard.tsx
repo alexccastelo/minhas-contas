@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { StatusBadge } from "./StatusBadge";
+import { ComprovanteButton } from "@/components/expenses/ComprovanteButton";
 import type { Expense, Profile } from "@/lib/types";
 
 interface TimelineCardProps {
@@ -114,6 +115,14 @@ export function TimelineCard({ expense, profile, onEdit }: TimelineCardProps) {
         >
           {loading ? "…" : "✓"}
         </button>
+      )}
+
+      {/* Botão comprovante (só quando pago) */}
+      {status === "pago" && (
+        <ComprovanteButton
+          expenseId={expense.id}
+          comprovanteUrl={expense.comprovante_url}
+        />
       )}
     </div>
   );
