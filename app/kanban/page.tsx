@@ -32,7 +32,7 @@ export default async function KanbanPage({ searchParams }: PageProps) {
   const mes = mesParam && /^\d{4}-\d{2}$/.test(mesParam) ? mesParam : mesAtual;
   const todayStr = today.toISOString().split("T")[0];
 
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   // Busca períodos do mês selecionado (todos os perfis)
   const { data: periodsData } = await supabase

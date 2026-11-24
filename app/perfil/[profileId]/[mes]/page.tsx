@@ -32,7 +32,7 @@ export default async function PerfilMesPage({ params }: PageProps) {
   // Valida formato do mês "YYYY-MM"
   if (!/^\d{4}-\d{2}$/.test(mes)) notFound();
 
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
   const competencia = `${mes}-01`;
   const nextMes = calcNextMes(mes);
   const nextCompetencia = `${nextMes}-01`;

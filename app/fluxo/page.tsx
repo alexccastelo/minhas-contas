@@ -18,7 +18,7 @@ function formatMesLabel(competencia: string): string {
 }
 
 export default async function FluxoPage() {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   // Busca todos os períodos com perfil
   const { data: periodsData } = await supabase

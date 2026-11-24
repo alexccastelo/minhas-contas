@@ -6,7 +6,7 @@ import type { Profile, Expense } from "@/lib/types";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const todayStr = today.toISOString().split("T")[0];

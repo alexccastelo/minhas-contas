@@ -6,7 +6,7 @@ import type { Loan, Profile } from "@/lib/types";
 export const dynamic = "force-dynamic";
 
 export default async function EmprestimosPage() {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const [{ data: loansData }, { data: profilesData }] = await Promise.all([
     supabase

@@ -6,7 +6,7 @@ import type { Subscription } from "@/lib/types";
 export const dynamic = "force-dynamic";
 
 export default async function AssinaturasPage() {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const { data } = await supabase
     .from("subscriptions")

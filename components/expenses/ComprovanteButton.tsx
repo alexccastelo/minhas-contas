@@ -4,6 +4,15 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 
+// Registros antigos guardam a URL pública completa; novos guardam só o caminho.
+function storagePath(value: string) {
+  const marker = "/comprovantes/";
+  const i = value.indexOf(marker);
+  return value.startsWith("http") && i >= 0
+    ? decodeURIComponent(value.slice(i + marker.length).split("?")[0])
+    : value;
+}
+
 interface ComprovanteButtonProps {
   expenseId: string;
   comprovanteUrl: string | null;
@@ -42,17 +51,10 @@ export function ComprovanteButton({ expenseId, comprovanteUrl }: ComprovanteButt
 
       if (uploadErr) throw uploadErr;
 
-      // Obtém URL pública
-      const { data: urlData } = sb.storage
-        .from("comprovantes")
-        .getPublicUrl(path);
-
-      const publicUrl: string = urlData.publicUrl;
-
-      // Salva na expense
+      // Bucket é privado: salva só o caminho; a URL assinada é gerada ao abrir
       const { error: updateErr } = await sb
         .from("expenses")
-        .update({ comprovante_url: publicUrl })
+        .update({ comprovante_url: path })
         .eq("id", expenseId);
 
       if (updateErr) throw updateErr;
@@ -67,6 +69,22 @@ export function ComprovanteButton({ expenseId, comprovanteUrl }: ComprovanteButt
     }
   }
 
+  async function handleOpen() {
+    if (!comprovanteUrl) return;
+    // Abre a aba já no clique (evita bloqueio de pop-up) e depois aponta para a URL assinada
+    const win = window.open("", "_blank");
+    const { data, error: signErr } = await createClient()
+      .storage.from("comprovantes")
+      .createSignedUrl(storagePath(comprovanteUrl), 60);
+    if (signErr || !data) {
+      win?.close();
+      setError("Não foi possível abrir o comprovante");
+      return;
+    }
+    if (win) win.location.href = data.signedUrl;
+    else window.location.href = data.signedUrl;
+  }
+
   async function handleRemove() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = createClient() as any;
@@ -78,10 +96,9 @@ export function ComprovanteButton({ expenseId, comprovanteUrl }: ComprovanteButt
   if (comprovanteUrl) {
     return (
       <div className="flex items-center gap-1">
-        <a
-          href={comprovanteUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          onClick={handleOpen}
           className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-emerald-400 hover:bg-emerald-500/10 transition-colors"
           title="Ver comprovante"
         >
@@ -89,7 +106,7 @@ export function ComprovanteButton({ expenseId, comprovanteUrl }: ComprovanteButt
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
           </svg>
           <span>Comprov.</span>
-        </a>
+        </button>
         <button
           onClick={handleRemove}
           className="rounded-lg p-1 text-gray-600 hover:text-red-400 transition-colors"

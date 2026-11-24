@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
@@ -82,11 +83,14 @@ export function DashboardHeader({
   return (
     <div className="bg-gray-900 pt-6 pb-3">
       {/* Título */}
-      <div className="px-4">
-        <p className="text-xs font-medium uppercase tracking-widest text-gray-500">
-          {formatDate(today)}
-        </p>
-        <h1 className="mt-1 text-2xl font-bold text-gray-100">Minhas Contas</h1>
+      <div className="flex items-start justify-between px-4">
+        <div>
+          <p className="text-xs font-medium uppercase tracking-widest text-gray-500">
+            {formatDate(today)}
+          </p>
+          <h1 className="mt-1 text-2xl font-bold text-gray-100">Minhas Contas</h1>
+        </div>
+        <LogoutButton />
       </div>
 
       {/* Cards de resumo */}

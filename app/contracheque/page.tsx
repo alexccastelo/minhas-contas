@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 const MARIA_PROFILE_ID = "00000000-0000-0000-0000-000000000002";
 
 export default async function ContrachequeePage() {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   // Verifica que o perfil existe
   const { data: maria } = await supabase
